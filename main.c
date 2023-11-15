@@ -35,3 +35,7 @@ int main() {
                 // Chama a função para realizar um débito
                 debito();
                 break;
+            case 5:
+                // Chama a função para realizar um depósito
+                deposito();
+                break;
