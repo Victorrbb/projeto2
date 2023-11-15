@@ -1,8 +1,6 @@
-//
-// Created by unifvbinda on 18/10/2023.
-//
 
-#include "function.h"
+
+#include "funcao.h"
 
 #include <dirent.h>
 #include <malloc.h>
