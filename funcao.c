@@ -289,3 +289,57 @@ void debito() {
     // Limpeza do buffer do teclado
     clearBuffer();
 }
+
+void deposito() {
+    // Declaração de variáveis para armazenar dados inseridos pelo usuário
+    char cpf_deposito[12];
+    int senha_deposito;
+
+    // Mensagens de interação com o usuário
+    printf("\n------------------------------\n");
+    printf("Depósito Bancário\n");
+    printf("Por favor, preencha os dados a seguir\n");
+
+    // Solicitação do CPF e busca do cliente
+    printf("Digite o CPF da conta em que deseja fazer um depósito: ");
+    scanf("%s", cpf_deposito);
+
+    Cliente *cliente = procurarCliente(cpf_deposito);
+
+    // Verificação se o cliente foi encontrado
+    if (cliente == NULL) {
+        printf("\nCPF não encontrado, por favor, tente novamente!\n");
+        return;
+    }
+
+    // Verificação da senha
+    printf("Digite sua senha: ");
+    scanf("%d", &senha_deposito);
+
+    if (senha_deposito != cliente->senha) {
+        printf("\nSenha incorreta, por favor, tente novamente!\n");
+        return;
+    }
+
+    // Solicitação do valor do depósito e atualização do saldo
+    double valor_deposito;
+    printf("Digite o valor que deseja depositar: ");
+    scanf("%lf", &valor_deposito);
+
+    double novo_valor = cliente->valor_entrada + valor_deposito;
+    cliente->valor_entrada = novo_valor;
+
+    // Registro da operação no extrato da conta
+    char deposito[100];
+    sprintf(deposito, "Depósito: RS%.2lf; Saldo atual: %.2lf", valor_deposito, cliente->valor_entrada);
+    adicionarExt(deposito, cpf_deposito);
+    attCliente(cpf_deposito, cliente);
+
+    // Mensagens de conclusão
+    printf("Depósito realizado com sucesso!\n");
+    printf("Para visualizar seu extrato, digite 5!\n");
+    printf("Até logo!\n");
+
+    // Limpeza do buffer do teclado
+    clearBuffer();
+}
