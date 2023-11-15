@@ -22,3 +22,8 @@ int main() {
                 // Chama a função para criar um novo cliente
                 criar_cliente();
                 break;
+
+            case 2:
+                // Chama a função para apagar um cliente
+                apagar_cliente();
+                break;

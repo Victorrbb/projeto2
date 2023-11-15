@@ -146,3 +146,42 @@ void criar_cliente() {
     return;
     clearBuffer();
 }
+
+void apagar_cliente() {
+    // Declaração de variável para armazenar o CPF a ser apagado
+    char cpf_apagar[12];
+
+    // Mensagens de interação com o usuário
+    printf("Exclusão de Conta\n");
+    printf("Por favor, preencha os dados a seguir:\n");
+    printf("Digite o CPF da conta que você deseja apagar: ");
+    scanf("%s", cpf_apagar);
+
+    // Busca do cliente pelo CPF inserido
+    Cliente *cliente = procurarCliente(cpf_apagar);
+
+    // Verificação se o cliente foi encontrado
+    if (cliente == NULL) {
+        printf("\nCPF não encontrado, conta inexistente!\n");
+        return;
+    }
+
+    // Construção do caminho do diretório a ser removido
+    char path_apagar[30];
+    sprintf(path_apagar, "%s/cliente", cpf_apagar);
+    remove(path_apagar);
+
+    // Remoção do arquivo de extrato
+    sprintf(path_apagar, "%s/extrato.txt", cpf_apagar);
+    remove(path_apagar);
+
+    // Remoção do diretório do cliente
+    rmdir(cpf_apagar);
+
+    // Mensagens de conclusão
+    printf("\nCONTA REMOVIDA COM SUCESSO!\n");
+    printf("Até logo...\n");
+
+    // Limpeza do buffer do teclado
+    clearBuffer();
+}
