@@ -39,3 +39,7 @@ int main() {
                 // Chama a função para realizar um depósito
                 deposito();
                 break;
+            case 6:
+                // Chama a função de trasnferencia
+                transferencia();
+                break;
