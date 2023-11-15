@@ -31,3 +31,7 @@ int main() {
                 // Chama a função para listar todos os clientes
                 listarClientes();
                 break;
+            case 4:
+                // Chama a função para realizar um débito
+                debito();
+                break;
