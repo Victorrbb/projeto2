@@ -343,3 +343,104 @@ void deposito() {
     // Limpeza do buffer do teclado
     clearBuffer();
 }
+
+void transferencia() {
+    clearBuffer();
+    char cpf_trans_origem[30];
+
+    printf("Vamos fazer uma transferencia!\n");
+    printf("Preencha os dados a seguir\n");
+    printf("Digite o CPF da conta origem: ");
+    scanf("%s", cpf_trans_origem);
+
+    Cliente *clientes1 = procurarCliente(cpf_trans_origem);
+
+    // fiz este if pra fazermos a validacao do cpf
+    if (clientes1 == NULL) {
+        printf("\nCPF origem invalido, tente novamente!\n");
+        return;
+    }
+
+    int senha_trans_origem;
+    printf("Digite a senha referente a conta origem: ");
+    scanf("%d", &senha_trans_origem); // pedir a senha para analisarmos.
+    if (senha_trans_origem !=
+        clientes1->senha) { // "if" pra ver se a senha ta correta.
+        printf("\nSenha incorreta, tente novamente!\n");
+        return; // caso contrario, return.
+    }
+    // pegando o cpf da conta destinataria
+    char cpf_destinatario[30];
+    printf("\nDigite o CPF da conta destino: ");
+    scanf("%s", cpf_destinatario);
+
+    // pegando o valor da transferencia
+    double valor_transfer;
+    printf("\nDigite o valor que voce queira transferir: ");
+    scanf("%lf", &valor_transfer);
+
+    // procurando se o cpf existe ou nao
+    Cliente *clientes2 = procurarCliente(cpf_destinatario);
+
+    // fiz este if pra fazermos a validacao do cpf
+    if (clientes2 == NULL) {
+        printf("\nCPF destinatario invalido, tente novamente!\n");
+        return;
+    }
+
+    // agora vamos fazer um debito na conta origem
+    // vamos fazer a taxacao de acordo com o tipo da conta
+    float taxa;
+    if (clientes1->tipo == 0) {
+        taxa = valor_transfer * 0.05;
+    }
+    if (clientes1->tipo == 1) {
+        taxa = valor_transfer * 0.03;
+    }
+
+    double valor_taxado = valor_transfer + taxa; // fazer a conta com a taxa
+
+    double novo_valor1 = clientes1->valor_entrada - valor_taxado;
+    // verificacao pra saber se a pessoa ultrapassou o limite
+    // e qual tipo de conta ela tem (tanto comum, quanto plus)
+    if ((novo_valor1 < -1000) && (clientes1->tipo == 0)) {
+        printf("Ultrapassou o limite da conta origem, tente novamente!\n");
+        return;
+    }
+    if ((novo_valor1 < -5000) && (clientes1->tipo == 1)) {
+        printf("Ultrapassou o limite da conta origem, tente novamente!\n");
+        return;
+    }
+
+    clientes1->valor_entrada = novo_valor1; // atualiza o valor
+
+    char debito_origem[70];
+    // jogamos a operacao feita para o extrato.txt
+    sprintf(debito_origem,
+            "Saida da transferencia: RS%.2lf; Taxa: RS%.2f; Valor atual: %.2f",
+            valor_transfer, taxa, clientes1->valor_entrada);
+    adicionarExt(debito_origem, cpf_trans_origem); // adicionando no arquivo
+    attCliente(cpf_trans_origem, clientes1);       // atualizando o cliente
+
+    // agora vamos fazer um deposito na conta destinataria
+
+    double novo_valor2 = clientes2->valor_entrada + valor_transfer;
+    clientes2->valor_entrada = novo_valor2;
+
+    // jogando a operacao la no extrato.txt
+    char deposito_destinario[70];
+    sprintf(deposito_destinario,
+            "Entrada da transferencia: RS%.2lf; Valor atual: %.2f",
+            valor_transfer, clientes2->valor_entrada);
+    adicionarExt(deposito_destinario, cpf_destinatario); // adicionando no arquivo
+    attCliente(cpf_destinatario, clientes2);             // atualizando o cliente
+
+    printf("trnsferencia realizada\n");
+    printf("opcao 5 para vizualizar o extrato\n");
+
+
+
+
+    clearBuffer();
+}
+
