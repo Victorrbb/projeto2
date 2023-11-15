@@ -218,3 +218,74 @@ void listarClientes() {
 
     closedir(dir);
 }
+
+// Função para realizar débito na conta do cliente
+void debito() {
+    // Mensagens de interação com o usuário
+    printf("Vamos fazer um débito!\n");
+    printf("Preencha os dados a seguir\n");
+
+    // Declaração de variáveis para armazenar dados inseridos pelo usuário
+    char cpf_debito[12];
+    printf("Digite o CPF correspondente à conta que deseja fazer um débito: ");
+    scanf("%s", cpf_debito);
+
+    // Busca do cliente pelo CPF inserido
+    Cliente *cliente = procurarCliente(cpf_debito);
+
+    // Verificação se o cliente foi encontrado
+    if (cliente == NULL) {
+        printf("\nCPF inválido, tente novamente!\n");
+        return;
+    }
+
+    // Verificação da senha
+    int senha;
+    printf("Digite sua senha: ");
+    scanf("%d", &senha);
+
+    if (senha != cliente->senha) {
+        printf("\nSenha incorreta, tente novamente!\n");
+        return;
+    }
+
+    // Cálculo da taxa com base no tipo de cliente
+    double valor_debito;
+    printf("Valor que deseja retirar: ");
+    scanf("%lf", &valor_debito);
+
+    float taxa;
+    if (cliente->tipo == 0) {
+        taxa = valor_debito * 0.05;
+    } else if (cliente->tipo == 1) {
+        taxa = valor_debito * 0.03;
+    }
+
+    // Cálculo do valor final após a taxa
+    double valor_taxado = valor_debito + taxa;
+    double novo_valor = cliente->valor_entrada - valor_taxado;
+
+    // Verificação de limite
+    if ((novo_valor < -1000 && cliente->tipo == 0) ||
+        (novo_valor < -5000 && cliente->tipo == 1)) {
+        printf("Ultrapassou o limite, tente novamente!\n");
+        return;
+    }
+
+    // Atualização dos dados do cliente
+    cliente->valor_entrada = novo_valor;
+
+    // Registro da operação no extrato da conta
+    char debito[100];
+    sprintf(debito, "Débito: RS%.2lf; Taxa: RS%.2lf; Valor atual: %.2lf", valor_debito, taxa, cliente->valor_entrada);
+    adicionarExt(debito, cpf_debito);
+    attCliente(cpf_debito, cliente);
+
+    // Mensagens de conclusão
+    printf("O débito foi realizado\n");
+    printf("Opção 5 para visualizar o extrato\n");
+    printf("Até logo...\n");
+
+    // Limpeza do buffer do teclado
+    clearBuffer();
+}
