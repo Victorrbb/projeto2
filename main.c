@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "funcaoo.h"
+#include "function.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,7 +22,6 @@ int main() {
                 // Chama a função para criar um novo cliente
                 criar_cliente();
                 break;
-
             case 2:
                 // Chama a função para apagar um cliente
                 apagar_cliente();
@@ -40,6 +39,24 @@ int main() {
                 deposito();
                 break;
             case 6:
-                // Chama a função de trasnferencia
+                // Chama a função para exibir o extrato
+                extrato();
+                break;
+            case 7:
+                // Chama a função para realizar uma transferência
                 transferencia();
                 break;
+            case 8:
+                // Mensagem de encerramento
+                printf("Encerrado\n");
+                break;
+            default:
+                // Mensagem para opção inválida
+                printf("Opção inválida!\n");
+                break;
+        }
+    } while (opcao != 8); // Continua o loop até que a opção escolhida seja 8 (Encerrar)
+
+    // Retorna 0 para indicar que o programa foi executado com sucesso
+    return 0;
+}
