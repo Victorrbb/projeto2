@@ -1,4 +1,8 @@
-#include "funcao.h"
+//
+// Created by unifvbinda on 18/10/2023.
+//
+
+#include "function.h"
 
 #include <dirent.h>
 #include <malloc.h>
@@ -12,11 +16,11 @@ void menu(){
     printf("\nescolha a opção que voce quer realizar:\n");
     printf("1-criar cliente\n");
     printf("2-apagar cliente\n");
-    printf("3-fazer debito\n");
-    printf("4-fezer deposito \n");
-    printf("5-ver extrato\n");
-    printf("6-transferencia de conta\n");
-    printf("7-lista cliente\n");
+    printf("3-listar cliente\n");
+    printf("4-debito \n");
+    printf("5-deposito\n");
+    printf("6-extrato\n");
+    printf("7-transferencia\n");
     printf("8-sair\n");
     printf("digite uma opcao: \n");
 }
@@ -132,7 +136,7 @@ void criar_cliente() {
     printf("Data de nascimento: ");
 
 
-    mkdir(clientes->cpf); // Criar uma pasta de CPF.
+    mkdir(clientes->cpf, 0777); // Criar uma pasta de CPF.
     char path_cpf[30]; // Criei para poder jogar o arquivo dentro da pasta.
     // Gerando o caminho para salvar os arquivos
     sprintf(path_cpf, "%s/cliente", clientes->cpf);
@@ -184,39 +188,6 @@ void apagar_cliente() {
 
     // Limpeza do buffer do teclado
     clearBuffer();
-}
-
-
-void listarClientes() {
-    struct dirent *ent;
-    DIR *dir = opendir("."); // Abre o diretório atual
-
-    if (dir == NULL) {
-        perror("Erro ao abrir o diretório.");
-        return;
-    }
-// o while para mostrar todas as contas existentes
-    while ((ent = readdir(dir)) != NULL) {
-        if (strlen(ent->d_name) == 11) {
-            char path_cpf[30];
-            sprintf(path_cpf, "%s/cliente", ent->d_name);
-
-            FILE *f = fopen(path_cpf, "rb");
-            if (f != NULL) {
-                Cliente cliente;
-                fread(&cliente, sizeof(Cliente), 1, f);
-                fclose(f);
-
-                printf("Nome: %s\n", cliente.nome);
-                printf("CPF: %s\n", cliente.cpf);
-                printf("Tipo da conta: %s\n", (cliente.tipo == 0) ? "Conta comum" : "Conta plus");
-                printf("Valor inicial: %.2lf\n", cliente.valor_entrada);
-                printf("------------------------------\n");
-            }
-        }
-    }
-
-    closedir(dir);
 }
 
 // Função para realizar débito na conta do cliente
@@ -290,6 +261,7 @@ void debito() {
     clearBuffer();
 }
 
+// Função para realizar depósito na conta do cliente
 void deposito() {
     // Declaração de variáveis para armazenar dados inseridos pelo usuário
     char cpf_deposito[12];
@@ -343,7 +315,6 @@ void deposito() {
     // Limpeza do buffer do teclado
     clearBuffer();
 }
-
 void transferencia() {
     clearBuffer();
     char cpf_trans_origem[30];
@@ -444,3 +415,83 @@ void transferencia() {
     clearBuffer();
 }
 
+void extrato() {
+    clearBuffer();
+
+    printf("Voce esta na area de extrato\n");
+
+    printf("Preencha os dados\n");
+
+    char cpf_ext[30];
+    printf("Digite o CPF da conta para ver o extrato: ");
+    scanf("%s", cpf_ext);
+
+    // procurando o cpf pra ver se ele existe
+    Cliente *clientes = procurarCliente(cpf_ext);
+
+    // fiz este if pra fazermos a validacao do cpf
+    if (clientes == NULL) {
+        printf("\nCPF invalido, tente novamente!\n");
+        return;
+    }
+
+    // pegando a senha
+    int senha_ext;
+    printf("Digite a senha : ");
+    scanf("%d", &senha_ext);
+
+    // ver se a senha esta correta
+    if (senha_ext != clientes->senha) {
+        printf("\nSenha incorreta, tente novamente!\n");
+        return;
+    }
+
+    // vamos ler o arquivo
+    char path_ext[30];
+    sprintf(path_ext, "%s/extrato.txt", cpf_ext);
+    FILE *e = fopen(path_ext, "r");
+
+    char *r;
+    char le_linha[100]; // ler todas as linhas
+    while (!feof(e)) {
+        r = fgets(le_linha, 100, e); // vai ler ate 99 linhas (\n conta)
+        if (r) {
+            printf(" %s\n", le_linha);
+        }
+    }
+
+
+    clearBuffer();
+}
+
+void listarClientes() {
+    struct dirent *ent;
+    DIR *dir = opendir("."); // Abre o diretório atual
+
+    if (dir == NULL) {
+        perror("Erro ao abrir o diretório.");
+        return;
+    }
+// o while para mostrar todas as contas existentes
+    while ((ent = readdir(dir)) != NULL) {
+        if (strlen(ent->d_name) == 11) {
+            char path_cpf[30];
+            sprintf(path_cpf, "%s/cliente", ent->d_name);
+
+            FILE *f = fopen(path_cpf, "rb");
+            if (f != NULL) {
+                Cliente cliente;
+                fread(&cliente, sizeof(Cliente), 1, f);
+                fclose(f);
+
+                printf("Nome: %s\n", cliente.nome);
+                printf("CPF: %s\n", cliente.cpf);
+                printf("Tipo da conta: %s\n", (cliente.tipo == 0) ? "Conta comum" : "Conta plus");
+                printf("Valor inicial: %.2lf\n", cliente.valor_entrada);
+                printf("------------------------------\n");
+            }
+        }
+    }
+
+    closedir(dir);
+}
