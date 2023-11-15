@@ -185,3 +185,36 @@ void apagar_cliente() {
     // Limpeza do buffer do teclado
     clearBuffer();
 }
+
+
+void listarClientes() {
+    struct dirent *ent;
+    DIR *dir = opendir("."); // Abre o diretório atual
+
+    if (dir == NULL) {
+        perror("Erro ao abrir o diretório.");
+        return;
+    }
+// o while para mostrar todas as contas existentes
+    while ((ent = readdir(dir)) != NULL) {
+        if (strlen(ent->d_name) == 11) {
+            char path_cpf[30];
+            sprintf(path_cpf, "%s/cliente", ent->d_name);
+
+            FILE *f = fopen(path_cpf, "rb");
+            if (f != NULL) {
+                Cliente cliente;
+                fread(&cliente, sizeof(Cliente), 1, f);
+                fclose(f);
+
+                printf("Nome: %s\n", cliente.nome);
+                printf("CPF: %s\n", cliente.cpf);
+                printf("Tipo da conta: %s\n", (cliente.tipo == 0) ? "Conta comum" : "Conta plus");
+                printf("Valor inicial: %.2lf\n", cliente.valor_entrada);
+                printf("------------------------------\n");
+            }
+        }
+    }
+
+    closedir(dir);
+}

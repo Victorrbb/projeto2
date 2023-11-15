@@ -27,3 +27,7 @@ int main() {
                 // Chama a função para apagar um cliente
                 apagar_cliente();
                 break;
+            case 3:
+                // Chama a função para listar todos os clientes
+                listarClientes();
+                break;
